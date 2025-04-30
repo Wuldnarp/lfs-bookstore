@@ -1,17 +1,26 @@
 DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS book;
+DROP TABLE IF EXISTS purchase;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
+    username TEXT UNIQUE,
+    password TEXT
 );
 
-CREATE TABLE post (
+CREATE TABLE book (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    author_id INTEGER NOT NULL,
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    title TEXT NOT NULL,
-    body TEXT NOT NULL,
-    FOREIGN KEY (author_id) REFERENCES user (id)
+    title TEXT,
+    price INTEGER,
+    sellerID INTEGER,
+    FOREIGN KEY (sellerID) REFERENCES user (id)
+);
+
+CREATE TABLE purchase (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    bookID INTEGER,
+    date TEXT,
+    buyerID INTEGER,
+    FOREIGN KEY (buyerID) REFERENCES user (id),
+    FOREIGN KEY (bookID) REFERENCES book (id)
 );
