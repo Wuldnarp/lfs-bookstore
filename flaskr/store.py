@@ -11,19 +11,18 @@ bp = Blueprint('store', __name__)
 @bp.route('/')
 def index():
     db = get_db()
-    posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
+    books = db.execute(
+        'SELECT p.id, title, price, sellerID, username'
+        ' FROM book p JOIN user u ON p.sellerID = u.id'
     ).fetchall()
-    return render_template('store/index.html', posts=posts)
+    return render_template('store/index.html', books=books)
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
     if request.method == 'POST':
         title = request.form['title']
-        body = request.form['body']
+        price = request.form['price']
         error = None
 
         if not title:
@@ -34,39 +33,39 @@ def create():
         else:
             db = get_db()
             db.execute(
-                'INSERT INTO post (title, body, author_id)'
+                'INSERT INTO book (title, price, sellerID)'
                 ' VALUES (?, ?, ?)',
-                (title, body, g.user['id'])
+                (title, price, g.user['id'])
             )
             db.commit()
             return redirect(url_for('store.index'))
 
     return render_template('store/create.html')
 
-def get_post(id, check_author=True):
-    post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
+def get_book(id, check_author=True):
+    book = get_db().execute(
+        'SELECT p.id, title, price, sellerID, username'
+        ' FROM book p JOIN user u ON p.sellerID = u.id'
         ' WHERE p.id = ?',
         (id,)
     ).fetchone()
 
-    if post is None:
-        abort(404, f"Post id {id} doesn't exist.")
+    if book is None:
+        abort(404, f"book id {id} doesn't exist.")
 
-    if check_author and post['author_id'] != g.user['id']:
+    if check_author and book['sellerID'] != g.user['id']:
         abort(403)
 
-    return post
+    return book
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
-    post = get_post(id)
+    book = get_book(id)
 
     if request.method == 'POST':
         title = request.form['title']
-        body = request.form['body']
+        price = request.form['price']
         error = None
 
         if not title:
@@ -77,20 +76,20 @@ def update(id):
         else:
             db = get_db()
             db.execute(
-                'UPDATE post SET title = ?, body = ?'
+                'UPDATE book SET title = ?, price = ?'
                 ' WHERE id = ?',
-                (title, body, id)
+                (title, price, id)
             )
             db.commit()
             return redirect(url_for('store.index'))
 
-    return render_template('store/update.html', post=post)
+    return render_template('store/update.html', book=book)
 
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
 def delete(id):
-    get_post(id)
+    get_book(id)
     db = get_db()
-    db.execute('DELETE FROM post WHERE id = ?', (id,))
+    db.execute('DELETE FROM book WHERE id = ?', (id,))
     db.commit()
     return redirect(url_for('store.index'))

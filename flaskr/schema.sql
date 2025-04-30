@@ -1,25 +1,26 @@
-DROP TABLE IF EXISTS User;
-DROP TABLE IF EXISTS Book;
-DROP TABLE IF EXISTS Transaction;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS book;
+DROP TABLE IF EXISTS purchase;
 
-CREATE TABLE User (
-    Username TEXT PRIMARY KEY,
-    Password TEXT,
+CREATE TABLE user (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password TEXT
 );
 
-CREATE TABLE Book (
-    ID NUMERIC PRIMARY KEY,
-    Title TEXT,
-    Price INTEGER,
-    SellerID TEXT,
-    FOREIGN KEY (SellerID) REFERENCES User(Username)
+CREATE TABLE book (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    price INTEGER,
+    sellerID INTEGER,
+    FOREIGN KEY (sellerID) REFERENCES user (id)
 );
 
-CREATE TABLE Transaction (
-    ID NUMERIC PRIMARY KEY,
-    BookID NUMERIC,
-    Date TEXT,
-    BuyerID TEXT,
-    FOREIGN KEY (BuyerID) REFERENCES User(Username),
-    FOREIGN KEY (BookID) REFERENCES Book(ID)
+CREATE TABLE purchase (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    bookID INTEGER,
+    date TEXT,
+    buyerID INTEGER,
+    FOREIGN KEY (buyerID) REFERENCES user (id),
+    FOREIGN KEY (bookID) REFERENCES book (id)
 );
