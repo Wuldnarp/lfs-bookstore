@@ -26,6 +26,7 @@ CREATE TABLE purchase (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     bookID INTEGER,
     date TEXT,
+    address Text,
     buyerID INTEGER,
     FOREIGN KEY (buyerID) REFERENCES user (id),
     FOREIGN KEY (bookID) REFERENCES book (id)

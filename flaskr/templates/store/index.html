@@ -27,6 +27,9 @@
         {% if g.user['id'] == book['sellerID'] %}
           <a class="action" href="{{ url_for('store.update', id=book['id']) }}">Edit</a>
         {% endif %}
+        {% if g.user['id'] != book['sellerID'] %}
+        <a class="action" href="{{ url_for('store.purchase', id=book['id']) }}">Purchase</a>
+        {% endif %}
       </header>
     </article>
     {% if not loop.last %}

@@ -5,6 +5,7 @@ from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
+from datetime import datetime
 
 bp = Blueprint('store', __name__)
 
@@ -64,6 +65,21 @@ def create():
 
     return render_template('store/create.html')
 
+@bp.route('/transactions')
+@login_required
+def transactions():
+    db = get_db()
+    transactions = db.execute(
+        'SELECT p.date, p.address, b.title, b.author, b.year, b.edition, b.publisher, b.condition, b.description, b.price, u.username '
+        'FROM purchase p '
+        'INNER JOIN book b ON p.bookID = b.id '
+        'INNER JOIN user u on b.sellerID = u.ID '
+        'WHERE p.buyerID = ?'
+        'ORDER BY p.date DESC',
+        (g.user['id'],)
+    ).fetchall()
+    return render_template('store/transactions.html', transactions=transactions)
+
 def get_book(id, check_author=True):
     book = get_db().execute(
         'SELECT p.id, title, author, year, edition, publisher, condition, description, price, sellerID, username'
@@ -122,3 +138,35 @@ def delete(id):
     db.execute('DELETE FROM book WHERE id = ?', (id,))
     db.commit()
     return redirect(url_for('store.index'))
+
+@bp.route('/<int:id>/purchase', methods=('GET', 'POST'))
+@login_required
+def purchase(id):
+    book = get_book(id, False)
+
+    if request.method == 'POST':
+        address = request.form['address']
+
+        db = get_db()
+
+        status = db.execute(
+            "SELECT 1 FROM purchase WHERE bookID = ? LIMIT 1",
+            (id,)
+        ).fetchone()
+
+        if (status is not None):
+            flash('This book is already sold')
+            return redirect(url_for('index'))
+        
+        created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        db.execute(
+            'INSERT INTO purchase (bookID, date, address, buyerID )'
+            ' VALUES (?,?,?,?)',
+            (book['id'], created_at, address, g.user['id'])
+        )
+        db.commit()
+
+        return redirect(url_for('store.transactions'))
+
+    return render_template('store/purchase.html', book=book)

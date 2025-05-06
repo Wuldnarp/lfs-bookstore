@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Transactions{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    {% for transaction in transactions %}
+    <article class="Book">
+    <header>
+        <div>
+        <h1>{{ transaction['title'] }}</h1>
+        <div class="author">Author: {{ transaction['author'] }}kr.</div>
+        <div class="year">Year: {{ transaction['year'] }}kr.</div>
+        <div class="edition">Edition: {{ transaction['edition'] }}kr.</div>
+        <div class="publisher">Publisher: {{ transaction['publisher'] }}kr.</div>
+        <div class="condition">Condition: {{ transaction['condition'] }}kr.</div>
+        <div class="publisher">Publisher: {{ transaction['publisher'] }}kr.</div>
+        <div class="description">Description: {{ transaction['description'] }}</div>
+        <div class="price">Price: {{ transaction['price'] }}</div>
+        <div class="seller">Seller: {{ transaction['username'] }}</div>
+        </div>
+    </header>
+    <br>
+    <div class="date">Bought: {{transaction['date']}}</div>
+    <div class="address">Shipped to: {{transaction['address']}}</div>
+    </article>
+    {% if not loop.last %}
+    <hr>
+    {% endif %}
+    {% endfor %}
+{% endblock %}

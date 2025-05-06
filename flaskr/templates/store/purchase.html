@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Purchase{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <article class="Book">
+        <div>
+            <h1>{{ book['title'] }}</h1>
+            <div class="author">Author: {{ book['author'] }}kr.</div>
+            <div class="year">Year: {{ book['year'] }}kr.</div>
+            <div class="edition">Edition: {{ book['edition'] }}kr.</div>
+            <div class="publisher">Publisher: {{ book['publisher'] }}kr.</div>
+            <div class="condition">Condition: {{ book['condition'] }}kr.</div>
+            <div class="publisher">Publisher: {{ book['publisher'] }}kr.</div>
+            <div class="description">Description: {{ book['description'] }}</div>
+            <div class="price">Price: {{ book['price'] }}</div>
+            <div class="seller">Seller: {{ book['username'] }}</div>
+        </div>
+    </article>
+    <form method="post">
+        <label for="purchase">Purchase this book</label>
+        <div>Enter the shipping address:</div>
+        <input name="address" id="address" value="{{ request.form['address'] }}" required>
+        <input type="submit" value="purchase" onclick="return confirm('Are you sure you want to buy this book?');">
+    </form>
+{% endblock %}
