@@ -2,6 +2,7 @@
 
 {% block header %}
   <h1>{% block title %}Books{% endblock %}</h1>
+  <a class="action" href="{{ url_for('store.search') }}">Search</a>
   {% if g.user %}
     <a class="action" href="{{ url_for('store.create') }}">New</a>
   {% endif %}
@@ -22,7 +23,6 @@
           <div class="description">Description: {{ book['description'] }}</div>
           <div class="price">Price: {{ book['price'] }}</div>
           <div class="seller">Seller: {{ book['username'] }}</div>
-
         </div>
         {% if g.user['id'] == book['sellerID'] %}
           <a class="action" href="{{ url_for('store.update', id=book['id']) }}">Edit</a>

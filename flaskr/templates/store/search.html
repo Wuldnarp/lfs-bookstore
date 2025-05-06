@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Search{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        <label for="search">search</label>
+        <input name="search" id="search" value="{{ request.form['search'] }}" required>
+        <input type="submit" value="Search">
+    </form>
+    {% if results %}
+        {% for result in results %}
+            <div>
+                <h1>{{ result['title'] }}</h1>
+                <div class="author">Author: {{ result['author'] }}kr.</div>
+                <div class="year">Year: {{ result['year'] }}kr.</div>
+                <div class="edition">Edition: {{ result['edition'] }}kr.</div>
+                <div class="publisher">Publisher: {{ result['publisher'] }}kr.</div>
+                <div class="condition">Condition: {{ result['condition'] }}kr.</div>
+                <div class="publisher">Publisher: {{ result['publisher'] }}kr.</div>
+                <div class="description">Description: {{ result['description'] }}</div>
+                <div class="price">Price: {{ result['price'] }}</div>
+                <div class="seller">Seller: {{ result['username'] }}</div>
+            </div>
+            {% if g.user['id'] == result['sellerID'] %}
+                <a class="action" href="{{ url_for('store.update', id=result['id']) }}">Edit</a>
+            {% endif %}
+        {% endfor%}
+    {% endif%}
+{% endblock %}
