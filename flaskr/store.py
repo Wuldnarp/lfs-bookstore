@@ -17,6 +17,21 @@ def index():
     ).fetchall()
     return render_template('store/index.html', books=books)
 
+@bp.route('/search', methods=('GET', 'POST'))
+def search():
+
+    if request.method == 'POST':
+        search_value = request.form['search']
+
+        results = get_db().execute(
+            "SELECT * FROM book p JOIN user u ON p.sellerID = u.id WHERE title LIKE ? OR author LIKE ? OR year LIKE ? OR edition LIKE ? OR publisher LIKE ? OR condition LIKE ? OR description LIKE ? OR price LIKE ? OR username LIKE ? ",
+            ('%' + search_value + '%',) * 9
+        ).fetchall()
+        return render_template('store/search.html', results=results)
+
+    return render_template('store/search.html')
+
+
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
