@@ -11,6 +11,12 @@ CREATE TABLE user (
 CREATE TABLE book (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT,
+    author TEXT,
+    year INTEGER,
+    edition TEXT,
+    publisher TEXT,
+    condition TEXT,
+    description TEXT,
     price INTEGER,
     sellerID INTEGER,
     FOREIGN KEY (sellerID) REFERENCES user (id)
