@@ -12,7 +12,7 @@ bp = Blueprint('store', __name__)
 def index():
     db = get_db()
     books = db.execute(
-        'SELECT p.id, title, price, sellerID, username'
+        'SELECT p.id, title, author, year, edition, publisher, condition, description, price, sellerID, username'
         ' FROM book p JOIN user u ON p.sellerID = u.id'
     ).fetchall()
     return render_template('store/index.html', books=books)
@@ -22,20 +22,27 @@ def index():
 def create():
     if request.method == 'POST':
         title = request.form['title']
+        author = request.form['author']
+        year = request.form['year']
+        edition = request.form['edition']
+        publisher = request.form['publisher']
+        condition = request.form['condition']
+        description = request.form['description']
         price = request.form['price']
+
         error = None
 
-        if not title:
-            error = 'Title is required.'
+        if not title or not author or not year or not edition or not publisher or not condition or not description or not price:
+            error = 'missing some information.'
 
         if error is not None:
             flash(error)
         else:
             db = get_db()
             db.execute(
-                'INSERT INTO book (title, price, sellerID)'
-                ' VALUES (?, ?, ?)',
-                (title, price, g.user['id'])
+                'INSERT INTO book (title, author, year, edition, publisher, condition, description, price, sellerID)'
+                ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                (title, author, year, edition, publisher, condition, description, price, g.user['id'])
             )
             db.commit()
             return redirect(url_for('store.index'))
@@ -44,7 +51,7 @@ def create():
 
 def get_book(id, check_author=True):
     book = get_db().execute(
-        'SELECT p.id, title, price, sellerID, username'
+        'SELECT p.id, title, author, year, edition, publisher, condition, description, price, sellerID, username'
         ' FROM book p JOIN user u ON p.sellerID = u.id'
         ' WHERE p.id = ?',
         (id,)
@@ -65,20 +72,27 @@ def update(id):
 
     if request.method == 'POST':
         title = request.form['title']
+        author = request.form['author']
+        year = request.form['year']
+        edition = request.form['edition']
+        publisher = request.form['publisher']
+        condition = request.form['condition']
+        description = request.form['description']
         price = request.form['price']
+
         error = None
 
-        if not title:
-            error = 'Title is required.'
+        if not title or author or year or edition or publisher or condition or description or price:
+            error = 'missing some information.'
 
         if error is not None:
             flash(error)
         else:
             db = get_db()
             db.execute(
-                'UPDATE book SET title = ?, price = ?'
+                'UPDATE book SET title = ?, author = ?, year = ?, edition = ?, publisher = ?, condition = ?, description = ?, price = ?'
                 ' WHERE id = ?',
-                (title, price, id)
+                (title, author, year, edition, publisher, condition, description, price, id)
             )
             db.commit()
             return redirect(url_for('store.index'))
