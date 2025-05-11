@@ -6,11 +6,15 @@ from werkzeug.exceptions import abort
 from flaskr.auth import login_required
 from flaskr.db import get_db
 from datetime import datetime
-
+from flaskr.informationFlow import (Confidentiality,Role,can_flow,declassify)
 bp = Blueprint('store', __name__)
 
 @bp.route('/')
 def index():
+
+    if not can_flow(Confidentiality.LOW, Role.UNREGISTERED,Confidentiality.LOW, Role.UNREGISTERED):
+        raise Exception("illegal information flow")
+    
     db = get_db()
     books = db.execute(
         'SELECT p.id, title, author, year, edition, publisher, condition, description, price, sellerID, username'
@@ -20,6 +24,9 @@ def index():
 
 @bp.route('/search', methods=('GET', 'POST'))
 def search():
+
+    if not can_flow(Confidentiality.LOW, Role.UNREGISTERED,Confidentiality.LOW, Role.UNREGISTERED):
+        raise Exception("illegal information flow")
 
     if request.method == 'POST':
         search_value = request.form['search']
@@ -37,6 +44,10 @@ def search():
 @login_required
 def create():
     if request.method == 'POST':
+
+        if not declassify(Confidentiality.LOW, Role.SELLER, Confidentiality.LOW, Role.UNREGISTERED):
+            raise Exception("illegal declassification")
+
         title = request.form['title']
         author = request.form['author']
         year = request.form['year']
@@ -145,6 +156,10 @@ def purchase(id):
     book = get_book(id, False)
 
     if request.method == 'POST':
+
+        if not can_flow(Confidentiality.LOW, Role.UNREGISTERED,Confidentiality.HIGH, Role.BUYER):
+            raise Exception("illegal information flow")
+    
         address = request.form['address']
 
         db = get_db()
