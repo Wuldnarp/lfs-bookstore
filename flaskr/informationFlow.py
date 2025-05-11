@@ -10,14 +10,13 @@ class Role(Enum):
     SELLER = 3 
 
 
-def can_flow(src_conf:Confidentiality, src_role:Role, dst_conf:Confidentiality, dst_role:Role) -> bool:
-    # Confidentiality check
-    if src_conf == Confidentiality.HIGH and dst_conf == Confidentiality.LOW:
-        return False  
-    # Role hierarchy: Unregistered ≤ Buyer, Unregistered ≤ Seller, Buyer ≰ Seller
-    if src_role == dst_role:
+def can_flow(from_conf:Confidentiality, from_role:Role, to_conf:Confidentiality, to_role:Role) -> bool:
+    
+    if from_role == to_role:
         return True  
-    if src_role == Role.UNREGISTERED:
+    if from_role == Role.UNREGISTERED:
+        if from_conf == Confidentiality.HIGH and to_conf == Confidentiality.LOW:
+            return False
         return True  
     return False
 
